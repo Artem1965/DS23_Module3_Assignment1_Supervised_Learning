@@ -57,10 +57,23 @@ Answer each in 2-5 sentences.
 6. **Stability.** How much does the score move across CV folds? Would you hand this
    single number to a stakeholder as "the" performance? Why or why not?
 
-The score moves across the folds very strongly. For the tree models the movement is huge: for Random Forest the spread is close to the mean - ±111 against a mean of 120. Gradient Boosting is even worse - a spread of 185, larger than its mean of 167.
-This is probably rooted in the nature of trees combined with a time series. TimeSeriesSplit cuts the series by time, so each successive fold tests the model on a later stretch where order volume is higher. Trees, by design, cannot output values above the maximum seen during training. On the later folds the real order counts climb and the tree hits a ceiling.
-Taking the test results into account, it becomes clear that for the tree models cross-validation is a harsher check than the test itself.
-   Because of this, the CV number should be shown to a stakeholder as a measure of stability and risk, not as the model's expected performance - as a point estimate of error it overstates how badly the trees actually forecast.
+The score moves across the folds very strongly. For the tree models the 
+movement is huge: for Random Forest the spread nearly equals the mean -
+±111 against a mean of 120. Gradient Boosting is even worse - a spread of 
+185, larger than its mean of 167. The per-fold RMSE for Gradient Boosting 
+makes the pattern concrete: [41.1, 36.1, 131.7, 530.8, 96.5] across the 
+five time-ordered folds. The error stays low on the early folds, then 
+explodes to 530.8 on the fourth — a 13× swing between the best and worst 
+fold. This is probably rooted in the nature of trees combined with a time 
+series. TimeSeriesSplit cuts the series by time, so each successive fold 
+tests the model on a later stretch where order volume is higher. Trees, by 
+design, cannot output values above the maximum seen during training. On the 
+later folds the real order counts climb and the tree hits a ceiling. Taking 
+the test results into account, it becomes clear that for the tree models 
+cross-validation is a harsher check than the test itself. Because of this, 
+the CV number should be shown to a stakeholder as a measure of stability and 
+risk, not as the model's expected performance — as a point estimate of error 
+it overstates how badly the trees actually forecast.
 
 7. **Leakage / time.** (Required for B too, in one line.) How did you guarantee the
    model never saw information from the future or from the test set? For a time-based
